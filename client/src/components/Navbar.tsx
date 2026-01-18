@@ -19,10 +19,10 @@ export function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: "Services", href: "/services" },
-    { name: "Team", href: "/team" },
-    { name: "Gallery", href: "/gallery" },
-    { name: "Contact", href: "/contact" },
+    { name: "Services", href: "#services" },
+    { name: "Team", href: "#team" },
+    { name: "Gallery", href: "#gallery" },
+    { name: "Contact", href: "#contact" },
   ];
 
   return (
@@ -37,19 +37,19 @@ export function Navbar() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
+          <a href="#hero" className="flex items-center gap-2 group">
             <div className="bg-primary/10 p-2 rounded-full group-hover:bg-primary/20 transition-colors">
               <Scissors className="h-6 w-6 text-primary" />
             </div>
             <span className={cn("text-2xl font-display font-bold tracking-tight", scrolled ? "text-foreground" : "text-foreground")}>
               Lumière Salon
             </span>
-          </Link>
+          </a>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <Link
+              <a
                 key={link.name}
                 href={link.href}
                 className={cn(
@@ -62,7 +62,7 @@ export function Navbar() {
                   "absolute -bottom-1 left-0 w-full h-0.5 bg-primary transform origin-left transition-transform duration-300",
                   location === link.href ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                 )} />
-              </Link>
+              </a>
             ))}
             <Link href="/booking">
               <Button className="rounded-full px-6 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25">
@@ -94,7 +94,7 @@ export function Navbar() {
           >
             <div className="px-4 pt-2 pb-6 space-y-2">
               {navLinks.map((link) => (
-                <Link
+                <a
                   key={link.name}
                   href={link.href}
                   className={cn(
@@ -106,7 +106,7 @@ export function Navbar() {
                   onClick={() => setIsOpen(false)}
                 >
                   {link.name}
-                </Link>
+                </a>
               ))}
               <div className="pt-4 px-4">
                 <Link href="/booking" onClick={() => setIsOpen(false)}>

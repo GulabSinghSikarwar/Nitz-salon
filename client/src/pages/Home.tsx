@@ -1,15 +1,49 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { useServices, useTestimonials } from "@/hooks/use-salon";
+import { useServices, useTestimonials, useStaff, useSendMessage } from "@/hooks/use-salon";
 import { ServiceCard } from "@/components/ServiceCard";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
-import { ArrowRight, Star, Quote, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Star, Quote, ChevronRight, Instagram, Twitter, Linkedin, MapPin, Phone, Mail, Clock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { insertMessageSchema } from "@shared/schema";
+import { useState } from "react";
 
 export default function Home() {
   const { data: services, isLoading: isLoadingServices } = useServices();
   const { data: testimonials, isLoading: isLoadingTestimonials } = useTestimonials();
+  const { data: staff, isLoading: isLoadingStaff } = useStaff();
+  
+  const sendMessage = useSendMessage();
+  const form = useForm({
+    resolver: zodResolver(insertMessageSchema),
+    defaultValues: { name: "", email: "", subject: "", message: "" },
+  });
+
+  const onContactSubmit = (data: z.infer<typeof insertMessageSchema>) => {
+    sendMessage.mutate(data, {
+      onSuccess: () => form.reset(),
+    });
+  };
+
+  const [galleryFilter, setGalleryFilter] = useState("All");
+  const galleryItems = [
+    { id: 1, category: "Hair", image: "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=2669&auto=format&fit=crop" },
+    { id: 2, category: "Color", image: "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?q=80&w=2576&auto=format&fit=crop" },
+    { id: 3, category: "Styling", image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=2669&auto=format&fit=crop" },
+    { id: 4, category: "Makeup", image: "https://images.unsplash.com/photo-1487412947132-28c53bfa373f?q=80&w=2670&auto=format&fit=crop" },
+    { id: 5, category: "Hair", image: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?q=80&w=2669&auto=format&fit=crop" },
+    { id: 6, category: "Nails", image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?q=80&w=2574&auto=format&fit=crop" },
+  ];
+  const galleryCategories = ["All", "Hair", "Color", "Styling", "Makeup", "Nails"];
+  const filteredGallery = galleryFilter === "All" 
+    ? galleryItems 
+    : galleryItems.filter(item => item.category === galleryFilter);
 
   const featuredServices = services?.filter(s => s.featured).slice(0, 3);
 
@@ -31,10 +65,9 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+      <section id="hero" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         {/* Background Image with overlay */}
         <div className="absolute inset-0 z-0">
-          {/* Unsplash Salon Interior */}
           <img
             src="https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=2574&auto=format&fit=crop"
             alt="Luxury Salon Interior"
@@ -67,18 +100,18 @@ export default function Home() {
                   Book Appointment
                 </Button>
               </Link>
-              <Link href="/services">
+              <a href="#services">
                 <Button size="lg" variant="outline" className="rounded-full px-8 py-6 text-lg bg-transparent text-white border-white hover:bg-white hover:text-black backdrop-blur-sm">
                   View Services
                 </Button>
-              </Link>
+              </a>
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* Featured Services */}
-      <section className="py-24 bg-background">
+      <section id="services" className="py-24 bg-background scroll-mt-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
             <div className="max-w-xl">
@@ -119,7 +152,7 @@ export default function Home() {
       </section>
 
       {/* About / Philosophy Section */}
-      <section className="py-24 bg-muted/30 border-y border-border/40">
+      <section id="about" className="py-24 bg-muted/30 border-y border-border/40 scroll-mt-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div 
@@ -129,7 +162,6 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="relative aspect-square lg:aspect-[4/5] rounded-3xl overflow-hidden"
             >
-              {/* Unsplash Woman with beautiful hair */}
               <img
                 src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=2669&auto=format&fit=crop"
                 alt="Stylist working"
@@ -177,19 +209,126 @@ export default function Home() {
               </div>
 
               <div className="pt-4">
-                <Link href="/team">
+                <a href="#team">
                   <Button className="rounded-full px-8 bg-foreground text-background hover:bg-foreground/90">
                     Meet Our Team
                   </Button>
-                </Link>
+                </a>
               </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Team Section */}
+      <section id="team" className="py-24 bg-background scroll-mt-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-6xl font-display font-bold mb-6">Meet The Artists</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-16">
+            Our talented team of stylists, colorists, and beauty experts dedicated to making you look and feel your absolute best.
+          </p>
+          
+          {isLoadingStaff ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-[500px] bg-muted/30 animate-pulse rounded-2xl" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {staff?.map((member, idx) => (
+                <motion.div
+                  key={member.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="group relative"
+                >
+                  <div className="aspect-[3/4] overflow-hidden rounded-2xl mb-6 bg-muted">
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter grayscale group-hover:grayscale-0"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex justify-center gap-4">
+                      <button className="p-2 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full text-white transition-colors">
+                        <Instagram className="w-5 h-5" />
+                      </button>
+                      <button className="p-2 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full text-white transition-colors">
+                        <Twitter className="w-5 h-5" />
+                      </button>
+                      <button className="p-2 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full text-white transition-colors">
+                        <Linkedin className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <h3 className="text-2xl font-display font-bold mb-1">{member.name}</h3>
+                    <p className="text-primary font-medium text-sm tracking-wide uppercase mb-3">{member.role}</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-4 px-4 line-clamp-3">
+                      {member.bio}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Gallery Section */}
+      <section id="gallery" className="py-24 bg-muted/20 border-y border-border/40 scroll-mt-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-6xl font-display font-bold mb-6">Our Portfolio</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-12">
+            A visual journey through our finest work and transformations.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
+            {galleryCategories.map((cat) => (
+              <Button
+                key={cat}
+                variant={galleryFilter === cat ? "default" : "outline"}
+                onClick={() => setGalleryFilter(cat)}
+                className="rounded-full px-6"
+              >
+                {cat}
+              </Button>
+            ))}
+          </div>
+
+          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {filteredGallery.map((item) => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                  className="relative group rounded-xl overflow-hidden aspect-[4/5]"
+                >
+                  <img
+                    src={item.image}
+                    alt={item.category}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="text-white font-display text-xl tracking-wide font-medium">
+                      {item.category}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Testimonials */}
-      <section className="py-24 bg-background overflow-hidden">
+      <section id="testimonials" className="py-24 bg-background overflow-hidden scroll-mt-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-4xl font-display font-bold mb-4">Client Love</h2>
@@ -238,6 +377,103 @@ export default function Home() {
                 </motion.div>
               ))
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-24 bg-muted/30 border-y border-border/40 scroll-mt-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
+          <h2 className="text-4xl md:text-6xl font-display font-bold mb-6">Contact Us</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            We'd love to hear from you. Get in touch with us for appointments, inquiries, or just to say hello.
+          </p>
+        </div>
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <div className="space-y-12">
+              <h2 className="text-3xl font-display font-bold mb-8">Get In Touch</h2>
+              <div className="space-y-6 text-left">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-primary/10 rounded-full text-primary">
+                    <MapPin className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold mb-1">Visit Us</h3>
+                    <p className="text-muted-foreground">123 Elegance Blvd<br />Beverly Hills, CA 90210</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-primary/10 rounded-full text-primary">
+                    <Phone className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold mb-1">Call Us</h3>
+                    <p className="text-muted-foreground">(310) 555-0123</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-primary/10 rounded-full text-primary">
+                    <Mail className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold mb-1">Email Us</h3>
+                    <p className="text-muted-foreground">hello@lumieresalon.com</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-primary/10 rounded-full text-primary">
+                    <Clock className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold mb-1">Opening Hours</h3>
+                    <div className="text-muted-foreground grid grid-cols-2 gap-x-8">
+                      <span>Mon - Fri</span><span>9:00 AM - 8:00 PM</span>
+                      <span>Saturday</span><span>10:00 AM - 6:00 PM</span>
+                      <span>Sunday</span><span>Closed</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="w-full h-64 bg-muted rounded-2xl overflow-hidden relative">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3305.6200791409395!2d-118.40035632360814!3d34.07596167314774!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2bc04d6d14789%3A0x293115e85d894676!2sBeverly%20Hills%2C%20CA%2090210!5e0!3m2!1sen!2sus!4v1709923831411!5m2!1sen!2sus"
+                  width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
+                  className="grayscale opacity-80 hover:opacity-100 transition-opacity"
+                ></iframe>
+              </div>
+            </div>
+
+            <div className="bg-card p-8 md:p-10 rounded-3xl shadow-lg border border-border/50">
+              <h2 className="text-3xl font-display font-bold mb-6">Send a Message</h2>
+              <form onSubmit={form.handleSubmit(onContactSubmit)} className="space-y-6 text-left">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Name</label>
+                    <Input placeholder="Jane Doe" className="h-12 rounded-xl" {...form.register("name")} />
+                    {form.formState.errors.name && <p className="text-destructive text-xs">{form.formState.errors.name.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Email</label>
+                    <Input placeholder="jane@example.com" type="email" className="h-12 rounded-xl" {...form.register("email")} />
+                    {form.formState.errors.email && <p className="text-destructive text-xs">{form.formState.errors.email.message}</p>}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Subject</label>
+                  <Input placeholder="Inquiry about..." className="h-12 rounded-xl" {...form.register("subject")} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Message</label>
+                  <Textarea placeholder="How can we help you?" className="min-h-[150px] rounded-xl resize-none p-4" {...form.register("message")} />
+                  {form.formState.errors.message && <p className="text-destructive text-xs">{form.formState.errors.message.message}</p>}
+                </div>
+                <Button type="submit" className="w-full h-12 rounded-xl text-lg bg-primary hover:bg-primary/90" disabled={sendMessage.isPending}>
+                  {sendMessage.isPending ? "Sending..." : "Send Message"}
+                </Button>
+              </form>
+            </div>
           </div>
         </div>
       </section>
