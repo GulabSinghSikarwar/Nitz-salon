@@ -74,3 +74,8 @@ export type Testimonial = typeof testimonials.$inferSelect;
 export type Booking = typeof bookings.$inferSelect;
 export type Message = typeof messages.$inferSelect;
 export type Subscriber = typeof subscribers.$inferSelect;
+
+// Insert Types
+export type InsertBooking = typeof insertBookingSchema._type;
+export type InsertMessage = typeof insertMessageSchema._type;
+export type InsertSubscriber = typeof insertSubscriberSchema._type;
