@@ -13,7 +13,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Calendar as CalendarIcon, User, Scissors } from "lucide-react";
+import { Check, Calendar as CalendarIcon, User, Scissors, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
