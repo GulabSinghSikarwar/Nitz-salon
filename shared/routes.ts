@@ -90,6 +90,13 @@ export const api = {
       },
     },
   },
+  healthCheck:{
+    method: 'GET' as const,
+    path: '/api/healthcheck',
+    responses: {
+      200: z.object({ status: z.string() }),
+    },
+  }
 };
 
 export function buildUrl(path: string, params?: Record<string, string | number>): string {
