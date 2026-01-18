@@ -187,14 +187,12 @@ railway init
 
 #### Configuration
 ```bash
-# Add PostgreSQL database
-railway add postgresql
+# Set environment variables (using existing Supabase database)
+railway variables set NODE_ENV=production
+railway variables set DATABASE_URL="your-supabase-connection-string"
 
 # Deploy application
 railway up
-
-# Set environment variables
-railway variables set NODE_ENV=production
 ```
 
 #### Railway Features
@@ -214,29 +212,20 @@ services:
   - type: web
     name: salon-oasis
     env: node
-    plan: starter
+    plan: free
     buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        fromDatabase:
-          name: salon-db
-          property: connectionString
-
-databases:
-  - name: salon-db
-    databaseName: salon_oasis
-    user: salon_user
-    plan: starter
+        value: your-supabase-connection-string
 ```
 
 #### Deployment Steps
 1. Push code to GitHub
 2. Connect repository to Render
-3. Configure service settings
-4. Deploy automatically
+3. Render will automatically detect the `render.yaml` and deploy
 
 ### Option 3: Heroku
 
